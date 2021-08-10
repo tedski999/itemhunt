@@ -3,7 +3,7 @@ package dev.tjsj.itemhunt;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 
-public class BoxSubcommandHandler implements SubcommandHandler {
+public class BoxSubcommandHandler extends SubcommandHandler {
 
 	public String name() { return "box"; }
 	public String usage() { return "/itemhunt box"; }

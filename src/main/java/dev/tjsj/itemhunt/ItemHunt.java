@@ -63,7 +63,7 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 
 		// Execute the first subcommand handler with a name equal to the first argument
 		for (SubcommandHandler handler : subcommandHandlers) {
-			if (handler.name().equalsIgnoreCase(subcommand)) {
+			if (handler.name.equalsIgnoreCase(subcommand)) {
 				handler.execute(this, sender, Arrays.copyOfRange(args, 1, args.length));
 				return true;
 			}

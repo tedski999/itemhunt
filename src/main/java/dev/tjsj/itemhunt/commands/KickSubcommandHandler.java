@@ -3,11 +3,10 @@ package dev.tjsj.itemhunt;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 
-public class KickSubcommandHandler implements SubcommandHandler {
-
-	public String name() { return "kick"; }
-	public String usage() { return "/itemhunt kick <username>"; }
-	public String help() { return "Kick a player from the ItemHunt game. You must be OP to run this command."; }
+public class KickSubcommandHandler extends SubcommandHandler {
+	public String name = "kick";
+	public String usage = "/itemhunt kick <username>";
+	public String help = "Kick a player from the ItemHunt game. You must be OP to run this command.";
 
 	public void execute(ItemHunt ih, CommandSender sender, String[] args) {
 		if (!sender.isOp()) {
@@ -15,7 +14,7 @@ public class KickSubcommandHandler implements SubcommandHandler {
 			return;
 		}
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Usage: " + usage());
+			sender.sendMessage(ChatColor.RED + "Usage: " + usage);
 			return;
 		}
 
