@@ -1,0 +1,19 @@
+plugins {
+	id 'java'
+}
+
+group 'dev.tjsj'
+version '1.0.0'
+
+repositories() {
+	maven { url 'https://papermc.io/repo/repository/maven-public/' }
+}
+
+dependencies {
+	implementation group: 'io.papermc.paper', name: 'paper-api', version: '1.17.1-R0.1-SNAPSHOT'
+}
+
+jar {
+	destinationDirectory = file('devsrv/plugins')
+	archiveFileName = project.name + '.jar'
+}

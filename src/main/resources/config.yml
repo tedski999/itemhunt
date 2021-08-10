@@ -1,0 +1,10 @@
+duration: 14400              # Game duration in seconds
+collection-reward: 1         # Reward for collecting an item
+bonus-rewards: [3, 2, 1]     # First gets 3 additional points, second gets 2, etc...
+kill-reward: 1               # Points gained for killing another player
+death-penalty: 1             # Points lost for dying
+
+# A list of collectable items
+items: [
+  # TODO
+]
