@@ -4,14 +4,18 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
-public class LeaveSubcommandHandler extends SubcommandHandler {
-	public String name = "leave";
-	public String usage = "/itemhunt leave";
-	public String help = "Leave the ItemHunt game.";
+public class LeaveSubcommandHandler implements SubcommandHandler {
+	public String name() { return "leave"; }
+	public String usage() { return "/itemhunt leave"; }
+	public String help() { return "Leave the ItemHunt game."; }
 
 	public void execute(ItemHunt ih, CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) {
 			sender.sendMessage(ChatColor.RED + "Sorry, but only players can run this type of command!");
+			return;
+		}
+		if (args.length != 0) {
+			sender.sendMessage(ChatColor.RED + "Usage: " + usage());
 			return;
 		}
 

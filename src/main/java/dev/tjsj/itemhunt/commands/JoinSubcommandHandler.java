@@ -4,10 +4,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
-public class JoinSubcommandHandler extends SubcommandHandler {
-	public String name = "join";
-	public String usage = "/itemhunt join <teamname>";
-	public String help = "Join the ItemHunt game. You can join another team or make your own.";
+public class JoinSubcommandHandler implements SubcommandHandler {
+	public String name() { return "join"; }
+	public String usage() { return "/itemhunt box"; }
+	public String help() { return "Join the ItemHunt game. You can join another team or make your own."; }
 
 	public void execute(ItemHunt ih, CommandSender sender, String[] args) {
 		if (!(sender instanceof Player)) {
@@ -15,7 +15,7 @@ public class JoinSubcommandHandler extends SubcommandHandler {
 			return;
 		}
 		if (args.length != 1) {
-			sender.sendMessage(ChatColor.RED + "Usage: " + usage);
+			sender.sendMessage(ChatColor.RED + "Usage: " + usage());
 			return;
 		}
 

@@ -3,8 +3,7 @@ package dev.tjsj.itemhunt;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 
-public class BoxSubcommandHandler extends SubcommandHandler {
-
+public class BoxSubcommandHandler implements SubcommandHandler {
 	public String name() { return "box"; }
 	public String usage() { return "/itemhunt box"; }
 	public String help() { return "Designate an item deposit box for the ItemHunt game. You must be OP to run this command."; }
