@@ -33,7 +33,8 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 			new KickSubcommandHandler(),
 			new LeaveSubcommandHandler(),
 			new StartSubcommandHandler(),
-			new StopSubcommandHandler()
+			new StopSubcommandHandler(),
+			new DurationSubcommandHandler()
 		};
 	}
 
