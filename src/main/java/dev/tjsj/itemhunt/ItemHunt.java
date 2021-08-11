@@ -12,8 +12,10 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public class ItemHunt extends JavaPlugin implements CommandExecutor {
+    private FileConfiguration config;
 	private SubcommandHandler[] subcommandHandlers;
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
@@ -39,19 +41,14 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 	@Override
 	public void onEnable() {
 
-		// TODO: Load config
-		this.saveDefaultConfig();
+		// Load config from disk
+		saveDefaultConfig();
+		config = super.getConfig();
 
 		// Register event listeners and base command handler
 		getServer().getPluginManager().registerEvents(new ItemDepositListener(this), this);
 		getServer().getPluginManager().registerEvents(new DepositBoxListener(this), this);
 		getCommand("itemhunt").setExecutor(this);
-	}
-
-	// Clean up the plugin after it has been disabled
-	@Override
-	public void onDisable() {
-
 	}
 
 	// Distribute incoming commands to appropriate subcommand handlers
@@ -75,6 +72,19 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 		return false;
 	}
 
+	// === Config Methods === //
+
+	// Return the loaded config
+	public FileConfiguration getConfig() {
+		return config;
+	}
+
+	// Write the config to disk
+	public void saveConfig() {
+		config.options().copyDefaults(true);
+		super.saveConfig();
+	}
+
 	// === Game Control Methods === //
 
 	// Is the game currently running?
@@ -92,10 +102,9 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 		for (Team team : teams.values())
 			team.score = 0;
 
-		secondsRemaining = 10; // TODO: from config
-
 		// Create a new runnable we will use for our async Bukkit task to count seconds
 		// countSecond() will be run asynchronously every 20 ticks (1 second)
+		secondsRemaining = config.getInt("duration");
 		gameTask = new BukkitRunnable() { public void run() { countSecond(); }};
 		gameTask.runTaskTimerAsynchronously(this, 0L, 20L);
 
