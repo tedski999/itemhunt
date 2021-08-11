@@ -15,13 +15,14 @@ import org.bukkit.command.CommandSender;
 
 public class ItemHunt extends JavaPlugin implements CommandExecutor {
 	private List<SubcommandHandler> subcommandHandlers;
-	private Map<String, String> playerTeams; // Map usernames to team names
-	private Map<String, Integer> teamScores; // Map team names to scores
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
+	private Map<String, Team> players; // Map player usernames to teams
+	private Map<String, Team> teams; // Map team names to teams
 
 	public ItemHunt() {
-		playerTeams = new HashMap<String, String>();
+		players = new HashMap<>();
+		teams = new HashMap<>();
 
 		// Create the subcommand handlers
 		subcommandHandlers = new ArrayList<>();
@@ -86,9 +87,9 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 		if (isGameRunning())
 			throw new IllegalStateException("The item hunt has already started!");
 
-		// Create our teams from the players who joined
-		teamScores = new HashMap<String, Integer>();
-		// TODO: add each unique team name from playerTeams
+		// Reset team scores
+		for (Team team : teams.values())
+			team.score = 0;
 
 		secondsRemaining = 10; // TODO: from config
 
@@ -114,32 +115,36 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 
 	// === Team Modifying Methods === //
 
-	// Return a list of usernames mapped to their team name
-	public Map<String, String> getPlayerTeams() {
-		return playerTeams;
+	// Return a map of plater usernames to their team
+	public Map<String, Team> getPlayers() {
+		return players;
 	}
 
-	// Return a list of team names mapped to their score
-	public Map<String, Integer> getTeamScores() {
-		return teamScores;
+	// Return a map of team names to corresponding teams
+	public Map<String, Team> getTeams() {
+		return teams;
 	}
 
 	// Add a username to a team if possible
 	public void addPlayer(String username, String teamname) throws IllegalStateException {
 		if (isGameRunning())
 			throw new IllegalStateException("The item hunt has already started!");
-		playerTeams.put(username, teamname);
+
+		// Create a new team if it doesn't exist. Add username to the list of members.
+		if (!teams.containsKey(teamname))
+			teams.put(teamname, new Team(teamname));
+		teams.get(teamname).members.add(username);
 	}
 
 	// Remove a username from a team if possible
 	public void removePlayer(String username) throws IllegalStateException {
-		if (!playerTeams.containsKey(username))
-			throw new IllegalStateException("No '" + username + "' has joined the item hunt!");
+		Team team = players.get(username);
+		if (team == null)
+			throw new IllegalStateException("'" + username + "' is not part of any team!");
 
-		playerTeams.remove(username);
-		if (isGameRunning()) {
-			// TODO: modify currently running game
-		}
+		// Remove username from team members and map between username and team
+		team.members.remove(username);
+		players.remove(username);
 	}
 
 	// === Private Implementation Methods === //
@@ -151,4 +156,11 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 			stopGame();
 		// TODO: update scoreboard
 	}
+}
+
+class Team {
+	public String name;
+	public int score = 0;
+	public List<String> members = new ArrayList<>();
+	public Team(String name) { this.name = name; }
 }

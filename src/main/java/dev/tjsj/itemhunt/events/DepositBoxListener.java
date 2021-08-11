@@ -20,8 +20,8 @@ public class DepositBoxListener implements Listener {
 		e.getInventory();
 		if (true) { // TODO: check if this is the deposit box
 			String username = e.getPlayer().getName();
-			Map<String, String> playerTeams = ih.getPlayerTeams();
-			if (!ih.isGameRunning() || !playerTeams.containsKey(username))
+			Map<String, Team> players = ih.getPlayers();
+			if (!ih.isGameRunning() || !players.containsKey(username))
 				e.setCancelled(true);
 		}
 	}
