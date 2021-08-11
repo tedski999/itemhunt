@@ -6,7 +6,7 @@ import org.bukkit.ChatColor;
 public class DurationSubcommandHandler implements SubcommandHandler {
 	public String name() { return "duration"; }
 	public String usage() { return "/itemhunt duration <hours?> <minutes?> <seconds?>"; }
-	public String help() { return ""; }
+	public String help() { return "View or change the duration of the item hunt."; }
 
 	public void execute(ItemHunt ih, CommandSender sender, String[] args) {
 		if (!sender.isOp()) {
