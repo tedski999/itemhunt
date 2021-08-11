@@ -14,7 +14,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 public class ItemHunt extends JavaPlugin implements CommandExecutor {
-	private List<SubcommandHandler> subcommandHandlers;
+	private SubcommandHandler[] subcommandHandlers;
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
 	private Map<String, Team> players; // Map player usernames to teams
@@ -25,13 +25,14 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 		teams = new HashMap<>();
 
 		// Create the subcommand handlers
-		subcommandHandlers = new ArrayList<>();
-		subcommandHandlers.add(new BoxSubcommandHandler());
-		subcommandHandlers.add(new JoinSubcommandHandler());
-		subcommandHandlers.add(new KickSubcommandHandler());
-		subcommandHandlers.add(new LeaveSubcommandHandler());
-		subcommandHandlers.add(new StartSubcommandHandler());
-		subcommandHandlers.add(new StopSubcommandHandler());
+		subcommandHandlers = new SubcommandHandler[] {
+			new BoxSubcommandHandler(),
+			new JoinSubcommandHandler(),
+			new KickSubcommandHandler(),
+			new LeaveSubcommandHandler(),
+			new StartSubcommandHandler(),
+			new StopSubcommandHandler()
+		};
 	}
 
 	// Setup the plugin after it has been enabled
