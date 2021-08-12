@@ -15,7 +15,7 @@ import dev.jorel.commandapi.CommandAPIConfig;
 import dev.jorel.commandapi.CommandAPICommand;
 
 public class ItemHunt extends JavaPlugin {
-    private FileConfiguration config;
+	private FileConfiguration config;
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
 	private Map<String, Team> players = new HashMap<>(); // Map player usernames to teams
@@ -38,12 +38,16 @@ public class ItemHunt extends JavaPlugin {
 		// Register commands
 		CommandAPI.onEnable(this);
 		new CommandAPICommand("itemhunt")
-			.withAliases("ih")
-			.withSubcommand(new BoxCommand(this))
-			.withSubcommand(new DurationGetCommand(this))
-			.withSubcommand(new DurationSetCommand(this))
-			.withSubcommand(new JoinCommand(this))
-			.register();
+				.withAliases("ih")
+				.withSubcommand(new BoxCommand(this))
+				.withSubcommand(new DurationGetCommand(this))
+				.withSubcommand(new DurationSetCommand(this))
+				.withSubcommand(new JoinCommand(this))
+				.withSubcommand(new KickCommand(this))
+				.withSubcommand(new LeaveCommand(this))
+				.withSubcommand(new StartCommand(this))
+				.withSubcommand(new StopCommand(this))
+				.register();
 
 		// Register event listeners
 		getServer().getPluginManager().registerEvents(new ItemDepositListener(this), this);

@@ -1,29 +1,25 @@
 package dev.tjsj.itemhunt.commands;
+import dev.jorel.commandapi.CommandAPICommand;
+import dev.jorel.commandapi.CommandPermission;
 import dev.tjsj.itemhunt.ItemHunt;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 
-public class StopCommand {
-	public String name() { return "stop"; }
-	public String usage() { return "/itemhunt stop"; }
-	public String help() { return "Stop the ItemHunt game early. You must be OP to run this command."; }
+public class StopCommand extends CommandAPICommand {
 
-	public void execute(ItemHunt ih, CommandSender sender, String[] args) {
-		if (!sender.isOp()) {
-			sender.sendMessage(ChatColor.RED + "You do not have permission to run this command!");
-			return;
-		}
-		if (args.length != 0) {
-			sender.sendMessage(ChatColor.RED + "Usage: " + usage());
-			return;
-		}
+	public StopCommand(ItemHunt ih)
+	{
+		super("stop");
+		withPermission(CommandPermission.OP);
 
-		try {
-			ih.stopGame();
-			sender.sendMessage(ChatColor.GREEN + "Stopping item hunt early...");
-		} catch (IllegalStateException err) {
-			sender.sendMessage(ChatColor.RED + err.getMessage());
-		}
+		executes((sender, args) -> {
+			try {
+				ih.stopGame();
+				sender.sendMessage(ChatColor.GREEN + "Stopping item hunt early...");
+			} catch (IllegalStateException err) {
+				sender.sendMessage(ChatColor.RED + err.getMessage());
+			}
+		});
 	}
 }

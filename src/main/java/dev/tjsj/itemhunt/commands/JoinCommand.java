@@ -14,10 +14,9 @@ public class JoinCommand extends CommandAPICommand {
 	public JoinCommand(ItemHunt ih) {
 		super("join");
 		withArguments(new StringArgument(("Team")));
-		withPermission(CommandPermission.OP);
 
-		executes((sender, args) -> {
-			Player player = (Player) sender;
+		executesPlayer((sender, args) -> {
+			Player player = sender;
 			String username = player.getName();
 			String teamname = (String) args[0];
 			try {
