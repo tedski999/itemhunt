@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
-public class LeaveSubcommandHandler implements SubcommandHandler {
+public class LeaveCommand {
 	public String name() { return "leave"; }
 	public String usage() { return "/itemhunt leave"; }
 	public String help() { return "Leave the ItemHunt game."; }

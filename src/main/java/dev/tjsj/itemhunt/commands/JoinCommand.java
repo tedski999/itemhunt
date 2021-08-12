@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 
-public class JoinSubcommandHandler implements SubcommandHandler {
+public class JoinCommand {
 	public String name() { return "join"; }
 	public String usage() { return "/itemhunt box"; }
 	public String help() { return "Join the ItemHunt game. You can join another team or make your own."; }

@@ -1,5 +1,6 @@
 plugins {
 	id 'java'
+	id 'com.github.johnrengelman.shadow' version '6.0.0'
 }
 
 group 'dev.tjsj'
@@ -7,13 +8,24 @@ version '1.0.0'
 
 repositories() {
 	maven { url 'https://papermc.io/repo/repository/maven-public/' }
+	maven { url = "https://jitpack.io" }
+	maven { url = "https://repo.codemc.org/repository/maven-public/" }
 }
 
 dependencies {
-	implementation group: 'io.papermc.paper', name: 'paper-api', version: '1.17.1-R0.1-SNAPSHOT'
+	compileOnly 'dev.jorel.CommandAPI:commandapi-annotations:6.3.0'
+	annotationProcessor 'dev.jorel.CommandAPI:commandapi-annotations:6.3.0'
+	implementation (
+		group: 'io.papermc.paper', name: 'paper-api', version: '1.17.1-R0.1-SNAPSHOT',
+		'dev.jorel.CommandAPI:commandapi-shade:6.3.0'
+	)
 }
 
-jar {
+build.finalizedBy(shadowJar)
+shadowJar {
 	destinationDirectory = file('devsrv/plugins')
 	archiveFileName = project.name + '.jar'
+	dependencies {
+		include dependency('dev.jorel.CommandAPI:commandapi-shade:6.3.0')
+	}
 }

@@ -3,7 +3,7 @@ package dev.tjsj.itemhunt;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 
-public class StopSubcommandHandler implements SubcommandHandler {
+public class StopCommand {
 	public String name() { return "stop"; }
 	public String usage() { return "/itemhunt stop"; }
 	public String help() { return "Stop the ItemHunt game early. You must be OP to run this command."; }

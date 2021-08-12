@@ -4,9 +4,3 @@ api-version: 1.17
 name: "ItemHunt"
 description: "A custom gamemode made for Get Swifty"
 author: tedski999
-
-commands:
-  itemhunt:
-    description: "Base command for all ItemHunt subcommands."
-    usage: "Usage: /<command> [box|join|kick|leave|start|stop]"
-    aliases: "ih"

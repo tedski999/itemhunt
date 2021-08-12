@@ -9,14 +9,14 @@ import java.util.Arrays;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class ItemHunt extends JavaPlugin implements CommandExecutor {
+import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIConfig;
+import dev.jorel.commandapi.CommandAPICommand;
+
+public class ItemHunt extends JavaPlugin {
     private FileConfiguration config;
-	private SubcommandHandler[] subcommandHandlers;
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
 	private Map<String, Team> players; // Map player usernames to teams
@@ -25,17 +25,12 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 	public ItemHunt() {
 		players = new HashMap<>();
 		teams = new HashMap<>();
+	}
 
-		// Create the subcommand handlers
-		subcommandHandlers = new SubcommandHandler[] {
-			new BoxSubcommandHandler(),
-			new JoinSubcommandHandler(),
-			new KickSubcommandHandler(),
-			new LeaveSubcommandHandler(),
-			new StartSubcommandHandler(),
-			new StopSubcommandHandler(),
-			new DurationSubcommandHandler()
-		};
+	// Load the plugin
+	@Override
+	public void onLoad() {
+		CommandAPI.onLoad(new CommandAPIConfig());
 	}
 
 	// Setup the plugin after it has been enabled
@@ -46,31 +41,18 @@ public class ItemHunt extends JavaPlugin implements CommandExecutor {
 		saveDefaultConfig();
 		config = super.getConfig();
 
-		// Register event listeners and base command handler
+		// Register commands
+		CommandAPI.onEnable(this);
+		new CommandAPICommand("itemhunt")
+			.withAliases("ih")
+			.withSubcommand(new BoxCommand(this))
+			.withSubcommand(new DurationGetCommand(this))
+			.withSubcommand(new DurationSetCommand(this))
+			.register();
+
+		// Register event listeners
 		getServer().getPluginManager().registerEvents(new ItemDepositListener(this), this);
 		getServer().getPluginManager().registerEvents(new DepositBoxListener(this), this);
-		getCommand("itemhunt").setExecutor(this);
-	}
-
-	// Distribute incoming commands to appropriate subcommand handlers
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-		// Print command usage if no arguments are provided
-		if (args.length < 1)
-			return false;
-		String subcommand = args[0];
-
-		// Execute the first subcommand handler with a name equal to the first argument
-		for (SubcommandHandler handler : subcommandHandlers) {
-			if (handler.name().equalsIgnoreCase(subcommand)) {
-				handler.execute(this, sender, Arrays.copyOfRange(args, 1, args.length));
-				return true;
-			}
-		}
-
-		// Print command usage if no subcommands are found
-		return false;
 	}
 
 	// === Config Methods === //
