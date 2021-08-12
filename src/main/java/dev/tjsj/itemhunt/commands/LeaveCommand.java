@@ -1,4 +1,5 @@
-package dev.tjsj.itemhunt;
+package dev.tjsj.itemhunt.commands;
+import dev.tjsj.itemhunt.ItemHunt;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

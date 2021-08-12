@@ -1,4 +1,5 @@
-package dev.tjsj.itemhunt;
+package dev.tjsj.itemhunt.events;
+import dev.tjsj.itemhunt.ItemHunt;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

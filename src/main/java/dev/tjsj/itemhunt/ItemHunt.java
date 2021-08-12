@@ -1,10 +1,9 @@
 package dev.tjsj.itemhunt;
+import dev.tjsj.itemhunt.commands.*;
+import dev.tjsj.itemhunt.events.*;
 
 import java.util.Map;
 import java.util.HashMap;
-import java.util.List;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -19,13 +18,8 @@ public class ItemHunt extends JavaPlugin {
     private FileConfiguration config;
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
-	private Map<String, Team> players; // Map player usernames to teams
-	private Map<String, Team> teams; // Map team names to teams
-
-	public ItemHunt() {
-		players = new HashMap<>();
-		teams = new HashMap<>();
-	}
+	private Map<String, Team> players = new HashMap<>(); // Map player usernames to teams
+	private Map<String, Team> teams = new HashMap<>(); // Map team names to teams
 
 	// Load the plugin
 	@Override
@@ -84,7 +78,7 @@ public class ItemHunt extends JavaPlugin {
 
 		// Reset team scores
 		for (Team team : teams.values())
-			team.score = 0;
+			team.setScore(0);
 
 		// Create a new runnable we will use for our async Bukkit task to count seconds
 		// countSecond() will be run asynchronously every 20 ticks (1 second)
@@ -134,7 +128,7 @@ public class ItemHunt extends JavaPlugin {
 		// Create a new team if it doesn't exist. Add username to the list of members.
 		if (!teams.containsKey(teamname))
 			teams.put(teamname, new Team(teamname));
-		teams.get(teamname).members.add(username);
+		teams.get(teamname).addMember(username);
 	}
 
 	// Remove a username from a team if possible
@@ -144,7 +138,7 @@ public class ItemHunt extends JavaPlugin {
 			throw new IllegalStateException("'" + username + "' is not part of any team!");
 
 		// Remove username from team members and map between username and team
-		team.members.remove(username);
+		team.removeMember(username);
 		players.remove(username);
 	}
 
@@ -157,11 +151,4 @@ public class ItemHunt extends JavaPlugin {
 			stopGame();
 		// TODO: update scoreboard
 	}
-}
-
-class Team {
-	public String name;
-	public int score = 0;
-	public List<String> members = new ArrayList<>();
-	public Team(String name) { this.name = name; }
 }

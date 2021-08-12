@@ -1,4 +1,6 @@
-package dev.tjsj.itemhunt;
+package dev.tjsj.itemhunt.events;
+import dev.tjsj.itemhunt.ItemHunt;
+import dev.tjsj.itemhunt.Team;
 
 import java.util.Map;
 
