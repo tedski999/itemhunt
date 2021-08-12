@@ -83,11 +83,9 @@ public class ItemHunt extends JavaPlugin {
 		// Create a new runnable we will use for our async Bukkit task to count seconds
 		// countSecond() will be run asynchronously every 20 ticks (1 second)
 		secondsRemaining = config.getInt("duration");
-		gameTask = new BukkitRunnable()
-		{
+		gameTask = new BukkitRunnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				countSecond();
 			}
 		};
