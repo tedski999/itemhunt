@@ -48,6 +48,7 @@ public class ItemHunt extends JavaPlugin {
 			.withSubcommand(new BoxCommand(this))
 			.withSubcommand(new DurationGetCommand(this))
 			.withSubcommand(new DurationSetCommand(this))
+			.withSubcommand(new JoinCommand(this))
 			.register();
 
 		// Register event listeners
@@ -88,7 +89,14 @@ public class ItemHunt extends JavaPlugin {
 		// Create a new runnable we will use for our async Bukkit task to count seconds
 		// countSecond() will be run asynchronously every 20 ticks (1 second)
 		secondsRemaining = config.getInt("duration");
-		gameTask = new BukkitRunnable() { public void run() { countSecond(); }};
+		gameTask = new BukkitRunnable()
+		{
+			@Override
+			public void run()
+			{
+				countSecond();
+			}
+		};
 		gameTask.runTaskTimerAsynchronously(this, 0L, 20L);
 
 		// TODO: announce start of game (with countdown?)
