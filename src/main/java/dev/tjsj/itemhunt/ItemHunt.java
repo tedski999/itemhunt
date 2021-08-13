@@ -23,6 +23,7 @@ import org.bukkit.scoreboard.*;
 public class ItemHunt extends JavaPlugin implements Listener {
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
+	private Scoreboard board;
 	private Map<String, String> playerTeams = new HashMap<>();
 	private Map<String, List<String>> teamPlayers = new HashMap<>();
 	private Map<String, Integer> teamScores = new HashMap<>();
@@ -57,7 +58,12 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			}
 			teamPlayers.get(teamName).add(player.getName()); // Add player to requested team list of members
 		}
-
+		board = getServer().getScoreboardManager().getNewScoreboard();
+		Objective obj = board.registerNewObjective("ItemHunt", "dummy", "Loading...");
+		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		for(Player online : getServer().getOnlinePlayers()) {
+			online.setScoreboard(board);
+		}
 		// Start the game
 		secondsRemaining = duration;
 		gameTask = new BukkitRunnable() {
@@ -67,14 +73,6 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			}
 		};
 		gameTask.runTaskTimerAsynchronously(this, 0L, 20L);
-	}
-
-	public void drawScoreboard() {
-		for (Entry<String, Integer> team : teamScores.entrySet()) {
-			team.getValue();
-			team.getKey();
-			obj.getScore("sadsadds").setScore(142857);
-		}
 	}
 
 	// Change a players team
@@ -99,8 +97,13 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			gameTask.cancel();
 			gameTask = null;
 		}
-
-		// TODO: update scoreboard
+		board.getObjective("ItemHunt").setDisplayName(convertSecondsToHMS(secondsRemaining));
+	}
+	private static String convertSecondsToHMS(int total) {
+		int hours = total / 3600;
+		int remainder = total - hours * 3600;
+		int minutes = remainder / 60;
+		return new String(hours + ":" + minutes + ":" + (remainder - minutes * 60));
 	}
 }
 
