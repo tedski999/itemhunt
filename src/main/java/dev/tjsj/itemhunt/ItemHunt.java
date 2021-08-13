@@ -63,6 +63,7 @@ public class ItemHunt extends JavaPlugin implements Listener {
 		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 		for(Player online : getServer().getOnlinePlayers()) {
 			online.setScoreboard(board);
+			online.sendMessage("hello");
 		}
 		// Start the game
 		secondsRemaining = duration;
@@ -97,7 +98,7 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			gameTask.cancel();
 			gameTask = null;
 		}
-		board.getObjective("ItemHunt").setDisplayName(convertSecondsToHMS(secondsRemaining));
+		//board.getObjective("ItemHunt").setDisplayName(convertSecondsToHMS(secondsRemaining));
 	}
 	private static String convertSecondsToHMS(int total) {
 		int hours = total / 3600;
