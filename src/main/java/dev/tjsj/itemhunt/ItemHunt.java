@@ -3,6 +3,7 @@ package dev.tjsj.itemhunt;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ public class ItemHunt extends JavaPlugin implements Listener {
 		// Register commands
 		getCommand("ihstart").setExecutor(new StartCommand(this));
 		getCommand("ihteam").setExecutor(new TeamCommand(this));
+		getCommand("ihScore").setExecutor(new ScoreCommand(this));
 		getCommand("ihbox").setExecutor(new BoxCommand(this));
 
 		// TODO: Register events
@@ -65,6 +67,14 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			}
 		};
 		gameTask.runTaskTimerAsynchronously(this, 0L, 20L);
+	}
+
+	public void drawScoreboard() {
+		for (Entry<String, Integer> team : teamScores.entrySet()) {
+			team.getValue();
+			team.getKey();
+			obj.getScore("sadsadds").setScore(142857);
+		}
 	}
 
 	// Change a players team
@@ -199,10 +209,11 @@ class ScoreCommand implements CommandExecutor {
 		Scoreboard bored = Bukkit.getScoreboardManager().getNewScoreboard();
 		Objective obj = bored.registerNewObjective("GetSwifty", "dummy", "Team Scores");
 		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		Team onlineCounter = bored.registerNewTeam("onlineCounter");
 		Player player = (Player) sender;
-		Score score = obj.getScore(player.getName());
+		Score score = obj.getScore("sadsadds");
 		score.setScore(142857);
+		sender.sendMessage("hi");
+		player.setScoreboard(bored);
 		return true;
 	}
 }
