@@ -9,9 +9,16 @@ commands:
   ihstart:
     description: "Start the item hunt!"
     usage: "Usage: /<command> <duration in seconds>"
+    permission: ih
   ihteam:
     description: "Join a team for the item hunt."
     usage: "Usage: /<command> <team name>"
   ihbox:
     description: "Designate the return box for the items in the hunt."
     usage: "Usage: /<command>"
+    permission: ih
+
+permissions:
+  ih:
+    description: "Gives access to all ItemHunt commands"
+    default: op

@@ -36,7 +36,8 @@ public class ItemHunt extends JavaPlugin implements Listener {
 		// TODO: Register events
 	}
 
-	public void startGame() throws IllegalStateException {
+	// Attempt to start the game of a certain duration
+	public void startGame(int duration) throws IllegalStateException {
 		if (isGameRunning())
 			throw new IllegalStateException("Game already running");
 
@@ -54,7 +55,7 @@ public class ItemHunt extends JavaPlugin implements Listener {
 		}
 
 		// Start the game
-		secondsRemaining = 10; // TODO: from argument
+		secondsRemaining = duration;
 		gameTask = new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -64,6 +65,7 @@ public class ItemHunt extends JavaPlugin implements Listener {
 		gameTask.runTaskTimerAsynchronously(this, 0L, 20L);
 	}
 
+	// Change a players team
 	public void requestTeam(String username, String teamname) {
 		if (isGameRunning())
 			// TODO: change current game teams? might be easier than i think
@@ -73,6 +75,7 @@ public class ItemHunt extends JavaPlugin implements Listener {
 
 	}
 
+	// Check if the async task is running
 	private boolean isGameRunning() {
 		return (gameTask != null && !gameTask.isCancelled());
 	}
@@ -100,11 +103,21 @@ class StartCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-		try {
-			ih.startGame();
-		} catch (IllegalStateException e) {
-			sender.sendMessage(e.getMessage());
+		// One arg required
+		if (args.length != 1)
 			return false;
+
+		// Attempt to parse the arg and start the game
+		try {
+			int duration = Integer.parseInt(args[0]);
+			if (duration > 0)
+				ih.startGame(duration);
+			else
+				sender.sendMessage(ChatColor.RED + "The duration has to be greater than 0");
+		} catch (NumberFormatException e) {
+			sender.sendMessage(ChatColor.RED + "That doesn't look like a number");
+		} catch (IllegalStateException e) {
+			sender.sendMessage(ChatColor.RED + e.getMessage());
 		}
 
 		return true;
@@ -121,12 +134,20 @@ class TeamCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+		// One arg required
 		if (args.length != 1)
 			return false;
-		if (sender instanceof Player)
-			ih.requestTeam(((Player) sender).getName(), args[0]);
-		else
-			sender.sendMessage("Only players can run this command");
+
+		// Check the sender is a player
+		if (!(sender instanceof Player)) {
+			sender.sendMessage(ChatColor.RED + "Only players can run this command");
+			return true;
+		}
+		Player player = (Player) sender;
+
+		// Change players team
+		ih.requestTeam(player.getName(), args[0]);
 		return true;
 	}
 }
