@@ -1,0 +1,14 @@
+main: "dev.tjsj.itemhunt.ItemHunt"
+version: 1.0
+api-version: 1.17
+name: "ItemHunt"
+description: "A custom gamemode made for Get Swifty"
+author: [tedski999, NiallusTheGr8]
+
+commands:
+  ihstart:
+    description: "Start the item hunt!"
+    usage: "Usage: /<command> <duration in seconds>"
+  ihteam:
+    description: "Join a team for the item hunt."
+    usage: "Usage: /<command> <team name>"
