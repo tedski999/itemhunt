@@ -14,6 +14,9 @@ import org.bukkit.command.Command;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
+import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.block.Block;
 
 public class ItemHunt extends JavaPlugin implements Listener {
 	private BukkitRunnable gameTask;
@@ -124,6 +127,39 @@ class TeamCommand implements CommandExecutor {
 			ih.requestTeam(((Player) sender).getName(), args[0]);
 		else
 			sender.sendMessage("Only players can run this command");
+		return true;
+	}
+}
+
+// ihbox
+class BoxCommand implements CommandExecutor {
+	private ItemHunt ih;
+
+	public BoxCommand(ItemHunt plugin) {
+		ih = plugin;
+	}
+
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+		// No args required
+		if (args.length != 0)
+			return false;
+
+		// Check the sender is a player
+		if (!(sender instanceof Player)) {
+			sender.sendMessage("Only players can run this command");
+			return true;
+		}
+		Player player = (Player) sender;
+
+		// Get the block they're looking at
+		Block block = player.getTargetBlock(null, 200);
+		if (block == null || !(block.getState() instanceof InventoryHolder)) {
+			player.sendMessage(ChatColor.RED + "Please point at a chest to designate as the item box before running this command");
+			return true;
+		}
+
+		player.sendMessage(ChatColor.GREEN + "TODO");
 		return true;
 	}
 }
