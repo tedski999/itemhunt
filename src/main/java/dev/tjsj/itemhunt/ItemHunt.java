@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.block.Block;
+import org.bukkit.scoreboard.*;
 
 public class ItemHunt extends JavaPlugin implements Listener {
 	private BukkitRunnable gameTask;
@@ -185,3 +186,24 @@ class BoxCommand implements CommandExecutor {
 		return true;
 	}
 }
+
+class ScoreCommand implements CommandExecutor {
+	private ItemHunt ih;
+
+	public ScoreCommand(ItemHunt plugin) {
+		ih = plugin;
+	}
+
+	@Override
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+		Scoreboard bored = Bukkit.getScoreboardManager().getNewScoreboard();
+		Objective obj = bored.registerNewObjective("GetSwifty", "dummy", "Team Scores");
+		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+		Team onlineCounter = bored.registerNewTeam("onlineCounter");
+		Player player = (Player) sender;
+		Score score = obj.getScore(player.getName());
+		score.setScore(142857);
+		return true;
+	}
+}
+
