@@ -32,6 +32,7 @@ public class ItemHunt extends JavaPlugin implements Listener {
 		// Register commands
 		getCommand("ihstart").setExecutor(new StartCommand(this));
 		getCommand("ihteam").setExecutor(new TeamCommand(this));
+		getCommand("ihbox").setExecutor(new BoxCommand(this));
 
 		// TODO: Register events
 	}
