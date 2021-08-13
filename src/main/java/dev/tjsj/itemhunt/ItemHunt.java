@@ -1,5 +1,10 @@
 package dev.tjsj.itemhunt;
 
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -8,10 +13,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.entity.Player;
 
 public class ItemHunt extends JavaPlugin implements Listener {
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
+	private Map<String, String> playerTeams = new HashMap<>();
+	private Map<String, List<String>> teamPlayers = new HashMap<>();
+	private Map<String, Integer> teamScores = new HashMap<>();
 
 	// Setup the plugin after it has been enabled
 	@Override
@@ -25,13 +34,21 @@ public class ItemHunt extends JavaPlugin implements Listener {
 	}
 
 	public void startGame() throws IllegalStateException {
-
-		// Fail if game is already started
-		if (gameTask != null && !gameTask.isCancelled())
+		if (isGameRunning())
 			throw new IllegalStateException("Game already running");
 
-		// TODO: initialise teams
-		// if player has not joined a team, their team is just players name
+		// Initialize teams
+		for (Player player : getServer().getOnlinePlayers()) {
+			String playerName = player.getName();
+			String teamName = playerName; // Default team name to the players name
+			if (playerTeams.containsKey(playerName)) // Change the requested team name if the player requested one
+				teamName = playerTeams.get(playerName);
+			if (!teamPlayers.containsKey(teamName)) { // Create a new team if it doesn't exist
+				teamPlayers.put(teamName, new ArrayList<>()); // New list of team members
+				teamScores.put(teamName, 0); // New team score is set to 0
+			}
+			teamPlayers.get(teamName).add(player.getName()); // Add player to requested team list of members
+		}
 
 		// Start the game
 		secondsRemaining = 10; // TODO: from argument
@@ -42,6 +59,19 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			}
 		};
 		gameTask.runTaskTimerAsynchronously(this, 0L, 20L);
+	}
+
+	public void requestTeam(String username, String teamname) {
+		if (isGameRunning())
+			// TODO: change current game teams? might be easier than i think
+			;
+		else
+			playerTeams.put(username, teamname);
+
+	}
+
+	private boolean isGameRunning() {
+		return (gameTask != null && !gameTask.isCancelled());
 	}
 
 	// Executed as an async Bukkit task to count seconds with minimal disturbance from server lag.
@@ -88,7 +118,12 @@ class TeamCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		// TODO set players team
-		return false;
+		if (args.length != 1)
+			return false;
+		if (sender instanceof Player)
+			ih.requestTeam(((Player) sender).getName(), args[0]);
+		else
+			sender.sendMessage("Only players can run this command");
+		return true;
 	}
 }
