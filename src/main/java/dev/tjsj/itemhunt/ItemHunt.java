@@ -65,6 +65,10 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			online.setScoreboard(board);
 			online.sendMessage("hello");
 		}
+		for(Entry<String, Integer> team : teamScores.entrySet())
+		{
+			obj.getScore(team.getKey()).setScore(team.getValue());
+		}
 		// Start the game
 		secondsRemaining = duration;
 		gameTask = new BukkitRunnable() {
@@ -86,6 +90,15 @@ public class ItemHunt extends JavaPlugin implements Listener {
 
 	}
 
+	public void setTeamScore(String teamName, int newScore) throws IllegalArgumentException
+	{
+		if(!teamScores.containsKey(teamName))
+			throw new IllegalArgumentException("Team does not exist");
+		teamScores.put(teamName, newScore);
+		board.getObjective("ItemHunt").getScore(teamName).setScore(newScore);
+	}
+
+
 	// Check if the async task is running
 	private boolean isGameRunning() {
 		return (gameTask != null && !gameTask.isCancelled());
@@ -98,7 +111,7 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			gameTask.cancel();
 			gameTask = null;
 		}
-		//board.getObjective("ItemHunt").setDisplayName(convertSecondsToHMS(secondsRemaining));
+		board.getObjective("ItemHunt").setDisplayName(convertSecondsToHMS(secondsRemaining));
 	}
 	private static String convertSecondsToHMS(int total) {
 		int hours = total / 3600;
@@ -161,7 +174,11 @@ class TeamCommand implements CommandExecutor {
 			return true;
 		}
 		Player player = (Player) sender;
-
+		if(args[0].length() > 16)
+		{
+			sender.sendMessage(ChatColor.RED + "Fuk u under 16 characters midgetman");
+			return true;
+		}
 		// Change players team
 		ih.requestTeam(player.getName(), args[0]);
 		return true;
