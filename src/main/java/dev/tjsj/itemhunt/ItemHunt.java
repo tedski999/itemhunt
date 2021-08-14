@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -12,21 +14,25 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.block.Block;
 import org.bukkit.scoreboard.*;
+import org.bukkit.Material;
 
-public class ItemHunt extends JavaPlugin implements Listener {
+// TODO: feedback to players using commands
+// TODO: clean code and some comments
+
+public class ItemHunt extends JavaPlugin {
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
 	private Scoreboard board;
 	private Map<String, String> playerTeams = new HashMap<>();
 	private Map<String, List<String>> teamPlayers = new HashMap<>();
 	private Map<String, Integer> teamScores = new HashMap<>();
+	private Map<String, Set<Material>> teamItems = new HashMap<>();
 
 	// Setup the plugin after it has been enabled
 	@Override
@@ -38,7 +44,8 @@ public class ItemHunt extends JavaPlugin implements Listener {
 		getCommand("ihScore").setExecutor(new ScoreCommand(this));
 		getCommand("ihbox").setExecutor(new BoxCommand(this));
 
-		// TODO: Register events
+		// Register events
+		getServer().getPluginManager().registerEvents(new ItemHuntEventHandler(this), this);
 	}
 
 	// Attempt to start the game of a certain duration
@@ -52,9 +59,12 @@ public class ItemHunt extends JavaPlugin implements Listener {
 			String teamName = playerName; // Default team name to the players name
 			if (playerTeams.containsKey(playerName)) // Change the requested team name if the player requested one
 				teamName = playerTeams.get(playerName);
+			else
+				playerTeams.put(playerName, playerName);
 			if (!teamPlayers.containsKey(teamName)) { // Create a new team if it doesn't exist
 				teamPlayers.put(teamName, new ArrayList<>()); // New list of team members
 				teamScores.put(teamName, 0); // New team score is set to 0
+				teamItems.put(teamName, new HashSet<>()); // New team collected items set is empty
 			}
 			teamPlayers.get(teamName).add(player.getName()); // Add player to requested team list of members
 		}
@@ -90,17 +100,41 @@ public class ItemHunt extends JavaPlugin implements Listener {
 
 	}
 
-	public void setTeamScore(String teamName, int newScore) throws IllegalArgumentException
-	{
-		if(!teamScores.containsKey(teamName))
-			throw new IllegalArgumentException("Team does not exist");
+	// TODO: proper error handling
+	public void depositItem(String playerName, Material itemType, Inventory inv) throws Exception {
+		if (!isGameRunning())
+			throw new Exception("game not runnignj");
+
+		String teamName = playerTeams.get(playerName);
+
+		if (teamItems.get(teamName).contains(itemType))
+			throw new Exception("thing already collectd");
+
+		// TODO: check if a valid item is being deposited, get reward and set new value
+		addTeamScore(teamName, 10);
+		teamItems.get(teamName).add(itemType);
+
+		// Clear the box on the next tick
+		BukkitRunnable clearTask = new BukkitRunnable() {
+			@Override
+			public void run() {
+				inv.clear();
+			}
+		};
+		clearTask.runTask(this);
+	}
+
+	public void addTeamScore(String teamName, int reward) {
+		setTeamScore(teamName, teamScores.get(teamName) + reward);
+	}
+
+	public void setTeamScore(String teamName, int newScore) {
 		teamScores.put(teamName, newScore);
 		board.getObjective("ItemHunt").getScore(teamName).setScore(newScore);
 	}
 
-
 	// Check if the async task is running
-	private boolean isGameRunning() {
+	public boolean isGameRunning() {
 		return (gameTask != null && !gameTask.isCancelled());
 	}
 
