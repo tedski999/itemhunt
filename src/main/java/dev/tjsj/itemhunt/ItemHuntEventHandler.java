@@ -12,6 +12,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -147,5 +148,10 @@ class ItemHuntEventHandler implements Listener {
 		for (Block block : new ArrayList<Block>(event.blockList()))
 			if (block.equals(ih.getBox()))
 				event.blockList().remove(block);
+	}
+
+	@EventHandler
+	public void onPlayerJoinEvent(PlayerJoinEvent event) {
+		ih.checkForPlayerRejoin(event.getPlayer());
 	}
 }

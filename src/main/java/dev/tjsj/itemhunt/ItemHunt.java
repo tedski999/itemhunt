@@ -43,6 +43,9 @@ public class ItemHunt extends JavaPlugin {
 
 		// Register events
 		getServer().getPluginManager().registerEvents(new ItemHuntEventHandler(this), this);
+
+		// Create scoreboard
+		createScoreboard();
 	}
 
 	// Clean up anything temporary made by the blugin
@@ -52,7 +55,8 @@ public class ItemHunt extends JavaPlugin {
 			boxLabel.remove();
 		if (board != null)
 			for (Player player : getServer().getOnlinePlayers())
-				player.setScoreboard(getServer().getScoreboardManager().getNewScoreboard());
+				if (player.getScoreboard() == board)
+					player.setScoreboard(getServer().getScoreboardManager().getNewScoreboard());
 	}
 
 	// Attempt to start the game of a certain duration
@@ -61,31 +65,12 @@ public class ItemHunt extends JavaPlugin {
 			throw new IllegalStateException("Game already running");
 		if (box == null)
 			throw new IllegalStateException("No deposit box set with /ihbox");
+		if (playerTeams.isEmpty())
+			throw new IllegalStateException("No teams made yet");
 
-		// Initialize teams
-		for (Player player : getServer().getOnlinePlayers()) {
-			String playerName = player.getName();
-			String teamName = playerName; // Default team name to the players name
-			if (playerTeams.containsKey(playerName)) // Change the requested team name if the player requested one
-				teamName = playerTeams.get(playerName);
-			else
-				playerTeams.put(playerName, playerName);
-			if (!teamPlayers.containsKey(teamName)) { // Create a new team if it doesn't exist
-				teamPlayers.put(teamName, new ArrayList<>()); // New list of team members
-				teamScores.put(teamName, 0); // New team score is set to 0
-				teamItems.put(teamName, new HashSet<>()); // New team collected items set is empty
-			}
-			teamPlayers.get(teamName).add(player.getName()); // Add player to requested team list of members
-		}
-
-		// Create scoreboard
-		board = getServer().getScoreboardManager().getNewScoreboard();
-		Objective obj = board.registerNewObjective("ItemHunt", "dummy", "Loading...");
-		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		for(Player online : getServer().getOnlinePlayers())
-			online.setScoreboard(board);
-		for(Entry<String, Integer> team : teamScores.entrySet())
-			obj.getScore(team.getKey()).setScore(team.getValue());
+		// Reset scores
+		for (String teamName : teamScores.keySet())
+			setTeamScore(teamName, 0);
 
 		// Start the game
 		secondsRemaining = duration;
@@ -99,13 +84,38 @@ public class ItemHunt extends JavaPlugin {
 	}
 
 	// Change a players team
-	public void requestTeam(String username, String teamname) {
-		if (isGameRunning())
-			// TODO: change current game teams? might be easier than i think
-			;
-		else
-			playerTeams.put(username, teamname);
+	public void requestTeam(Player player, String teamName) {
+		String playerName = player.getName();
+		String oldTeamName = playerTeams.get(playerName);
 
+		// Don't do anything if (re)joining the same team as before
+		if (oldTeamName != null && oldTeamName.equals(teamName))
+			return;
+
+		// Remove player from previous team
+		if (oldTeamName != null)
+			teamPlayers.get(oldTeamName).remove(playerName);
+
+		// Initialize new team if it doesn't exist yet
+		playerTeams.put(playerName, teamName);
+		if (!teamPlayers.containsKey(teamName)) {
+			teamPlayers.put(teamName, new ArrayList<>());
+			teamItems.put(teamName, new HashSet<>());
+			setTeamScore(teamName, 0);
+		}
+
+		// Add player to team list of members
+		teamPlayers.get(teamName).add(playerName);
+
+		// Clear previous team if now empty
+		if (oldTeamName != null && teamPlayers.get(oldTeamName).size() == 0) {
+			teamScores.remove(oldTeamName);
+			teamPlayers.remove(oldTeamName);
+			createScoreboard(); // We need to recreate the scoreboard to remove entries...
+		}
+
+		// Assign the players scoreboard to ours
+		player.setScoreboard(board);
 	}
 
 	// TODO: proper error handling
@@ -164,6 +174,12 @@ public class ItemHunt extends JavaPlugin {
 		return box;
 	}
 
+	public void checkForPlayerRejoin(Player player) {
+		String playerName = player.getName();
+		if (playerTeams.containsKey(playerName))
+			requestTeam(player, playerTeams.get(playerName));
+	}
+
 	// Check if the async task is running
 	public boolean isGameRunning() {
 		return (gameTask != null && !gameTask.isCancelled());
@@ -175,8 +191,27 @@ public class ItemHunt extends JavaPlugin {
 		if (--secondsRemaining <= 0) {
 			gameTask.cancel();
 			gameTask = null;
+
+			// Find winning team
+			String winningTeam = null;
+			int highestScore = 0;
+			for (Entry<String, Integer> entry : teamScores.entrySet()) {
+				if (entry.getValue() > highestScore) {
+					highestScore = entry.getValue();
+					winningTeam = entry.getKey();
+				} else if (entry.getValue() == highestScore) {
+					winningTeam = null;
+				}
+			}
+
+			// Display winner
+			if (winningTeam != null)
+				board.getObjective("ItemHunt").setDisplayName(winningTeam + " wins!");
+			else
+				board.getObjective("ItemHunt").setDisplayName("Draw!");
+		} else {
+			board.getObjective("ItemHunt").setDisplayName(convertSecondsToHMS(secondsRemaining));
 		}
-		board.getObjective("ItemHunt").setDisplayName(convertSecondsToHMS(secondsRemaining));
 	}
 
 	// Convert the number of seconds to hours : minutes : seconds
@@ -185,5 +220,31 @@ public class ItemHunt extends JavaPlugin {
 		int remainder = total - hours * 3600;
 		int minutes = remainder / 60;
 		return String.format("%02d:%02d:%02d", hours, minutes, remainder - minutes * 60);
+	}
+
+	// Create scoreboard
+	private void createScoreboard() {
+
+		// Create the new scoreboard
+		Scoreboard newBoard = getServer().getScoreboardManager().getNewScoreboard();
+		Objective obj = newBoard.registerNewObjective("ItemHunt", "dummy");
+		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+		// Initial display name to show
+		if (isGameRunning())
+			obj.setDisplayName(convertSecondsToHMS(secondsRemaining));
+		else
+			obj.setDisplayName("Waiting to start...");
+
+		// Update players scoreboard
+		for (Player online : getServer().getOnlinePlayers())
+			if (online.getScoreboard() == board)
+				online.setScoreboard(newBoard);
+
+		// Update scores
+		for (Entry<String, Integer> team : teamScores.entrySet())
+			obj.getScore(team.getKey()).setScore(team.getValue());
+
+		board = newBoard;
 	}
 }

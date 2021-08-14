@@ -73,7 +73,7 @@ class TeamCommand implements CommandExecutor {
 		}
 
 		// Change players team
-		ih.requestTeam(player.getName(), args[0]);
+		ih.requestTeam(player, args[0]);
 		sender.sendMessage(ChatColor.GREEN + "You have joined the item hunt team '" + args[0] + "'");
 		return true;
 	}
