@@ -246,6 +246,11 @@ public class ItemHunt extends JavaPlugin {
 		}
 	}
 
+	// Get a set of team names currently registered
+	public Set<String> getTeamNames() {
+		return teamPlayers.keySet();
+	}
+
 	// Check if the async task is running
 	public boolean isGameRunning() {
 		return (gameTask != null && !gameTask.isCancelled());

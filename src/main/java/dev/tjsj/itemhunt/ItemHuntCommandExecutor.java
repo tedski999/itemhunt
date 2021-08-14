@@ -1,6 +1,10 @@
 package dev.tjsj.itemhunt;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
@@ -9,7 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.InventoryHolder;
 
 // ihstart <duration in seconds>
-class StartCommand implements CommandExecutor {
+class StartCommand implements CommandExecutor, TabCompleter {
 	private ItemHunt ih;
 
 	public StartCommand(ItemHunt plugin) {
@@ -41,10 +45,22 @@ class StartCommand implements CommandExecutor {
 
 		return true;
 	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		String oneHour = Integer.toString(1 * 60 * 60);
+		String twoHoursThirtyMins = Integer.toString(1 * 60 * 60 + 30 * 60);
+		String fourHours = Integer.toString(4 * 60 * 60);
+		String twentyFourHours = Integer.toString(24 * 60 * 60);
+		if (args.length == 1)
+			return List.of(oneHour, twoHoursThirtyMins, fourHours, twentyFourHours);
+		else
+			return List.of();
+	}
 }
 
 // ihteam <team name>
-class TeamCommand implements CommandExecutor {
+class TeamCommand implements CommandExecutor, TabCompleter {
 	private ItemHunt ih;
 
 	public TeamCommand(ItemHunt plugin) {
@@ -74,10 +90,18 @@ class TeamCommand implements CommandExecutor {
 		sender.sendMessage(ChatColor.GREEN + "You have joined the item hunt team '" + args[0] + "'");
 		return true;
 	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		if (args.length == 1)
+			return new ArrayList<String>(ih.getTeamNames());
+		else
+			return List.of();
+	}
 }
 
 // ihbox
-class BoxCommand implements CommandExecutor {
+class BoxCommand implements CommandExecutor, TabCompleter {
 	private ItemHunt ih;
 
 	public BoxCommand(ItemHunt plugin) {
@@ -108,10 +132,15 @@ class BoxCommand implements CommandExecutor {
 		player.sendMessage(ChatColor.GREEN + "Deposit box set");
 		return true;
 	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		return List.of();
+	}
 }
 
 // ihitems
-class ItemsCommand implements CommandExecutor {
+class ItemsCommand implements CommandExecutor, TabCompleter {
 	private ItemHunt ih;
 
 	public ItemsCommand(ItemHunt plugin) {
@@ -139,5 +168,10 @@ class ItemsCommand implements CommandExecutor {
 
 		ih.openItemCatalog(player, 0);
 		return true;
+	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
+		return List.of();
 	}
 }
