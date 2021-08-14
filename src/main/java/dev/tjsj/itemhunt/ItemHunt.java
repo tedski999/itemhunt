@@ -115,7 +115,7 @@ public class ItemHunt extends JavaPlugin {
 		if (oldTeamName != null) {
 			if (oldTeamName.equals(teamName))
 				return;
-			leaveTeam(player, teamName);
+			leaveTeam(player, oldTeamName);
 		}
 
 		// Initialize new team if it doesn't exist yet
@@ -132,6 +132,7 @@ public class ItemHunt extends JavaPlugin {
 
 	// Remove player from team
 	public void leaveTeam(Player player, String teamName) {
+		playerTeams.remove(player.getName());
 		teamPlayers.get(teamName).remove(player.getName());
 		player.sendMessage(ChatColor.YELLOW + "Left item hunt team " + teamName + ".");
 
