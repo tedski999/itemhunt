@@ -12,9 +12,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scoreboard.*;
+import org.bukkit.block.Block;
 import org.bukkit.Material;
 
 // TODO: feedback to players using commands
@@ -22,6 +24,8 @@ import org.bukkit.Material;
 public class ItemHunt extends JavaPlugin {
 	private BukkitRunnable gameTask;
 	private int secondsRemaining;
+	private Block box;
+	private ArmorStand boxLabel;
 	private Scoreboard board;
 	private Map<String, String> playerTeams = new HashMap<>();
 	private Map<String, List<String>> teamPlayers = new HashMap<>();
@@ -41,10 +45,22 @@ public class ItemHunt extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(new ItemHuntEventHandler(this), this);
 	}
 
+	// Clean up anything temporary made by the blugin
+	@Override
+	public void onDisable() {
+		if (boxLabel != null)
+			boxLabel.remove();
+		if (board != null)
+			for (Player player : getServer().getOnlinePlayers())
+				player.setScoreboard(getServer().getScoreboardManager().getNewScoreboard());
+	}
+
 	// Attempt to start the game of a certain duration
 	public void startGame(int duration) throws IllegalStateException {
 		if (isGameRunning())
 			throw new IllegalStateException("Game already running");
+		if (box == null)
+			throw new IllegalStateException("No deposit box set with /ihbox");
 
 		// Initialize teams
 		for (Player player : getServer().getOnlinePlayers()) {
@@ -125,6 +141,27 @@ public class ItemHunt extends JavaPlugin {
 	public void setTeamScore(String teamName, int newScore) {
 		teamScores.put(teamName, newScore);
 		board.getObjective("ItemHunt").getScore(teamName).setScore(newScore);
+	}
+
+	// Set the new deposit box
+	public void setBox(Block block) {
+		if (boxLabel != null)
+			boxLabel.remove();
+		box = block;
+		boxLabel = (ArmorStand) box.getWorld().spawn(
+			box.getLocation().add(0.5, 1.0, 0.5),
+			ArmorStand.class);
+		boxLabel.setVisible(false);
+		boxLabel.setGravity(false);
+		boxLabel.setMarker(true);
+		boxLabel.setSmall(true);
+		boxLabel.setCustomName("The Box™");
+		boxLabel.setCustomNameVisible(true);
+	}
+
+	// Get the deposit box
+	public Block getBox() {
+		return box;
 	}
 
 	// Check if the async task is running

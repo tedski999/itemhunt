@@ -1,5 +1,7 @@
 package dev.tjsj.itemhunt;
 
+import java.util.ArrayList;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.entity.Player;
@@ -8,9 +10,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.ChatColor;
 
 class ItemHuntEventHandler implements Listener {
@@ -22,17 +29,21 @@ class ItemHuntEventHandler implements Listener {
 
 	@EventHandler
 	public void onInventoryOpenEvent(InventoryOpenEvent event) {
-		// TODO: check if is box
-		event.getView().getTopInventory();
-		if (!ih.isGameRunning())
+		InventoryHolder holder = event.getView().getTopInventory().getHolder();
+		if (!ih.isGameRunning() &&
+			holder instanceof BlockState &&
+			((BlockState) holder).getBlock().equals(ih.getBox()))
 			event.setCancelled(true);
 	}
 
 	@EventHandler
 	public void onInventoryDragEvent(InventoryDragEvent event) {
 
-		// TODO: check if is box
-		event.getView().getTopInventory();
+		// Skip if not the box
+		InventoryHolder holder = event.getView().getTopInventory().getHolder();
+		if (!(holder instanceof BlockState) ||
+			!((BlockState) holder).getBlock().equals(ih.getBox()))
+			return;
 
 		// Only deal with players
 		if (!(event.getView().getBottomInventory().getHolder() instanceof Player))
@@ -70,8 +81,11 @@ class ItemHuntEventHandler implements Listener {
 	@EventHandler
 	public void onInventoryClickEvent(InventoryClickEvent event) {
 
-		// TODO: check if is box
-		event.getView().getTopInventory();
+		// Skip if not the box
+		InventoryHolder holder = event.getView().getTopInventory().getHolder();
+		if (!(holder instanceof BlockState) ||
+			!((BlockState) holder).getBlock().equals(ih.getBox()))
+			return;
 
 		// Only deal with players
 		if (!(event.getView().getBottomInventory().getHolder() instanceof Player))
@@ -116,8 +130,22 @@ class ItemHuntEventHandler implements Listener {
 
 	@EventHandler
 	public void onInventoryMoveItemEvent(InventoryMoveItemEvent event) {
-		//if (event.getDestination() == box) { // TODO: check if is box
+		InventoryHolder holder = event.getDestination().getHolder();
+		if (holder instanceof BlockState &&
+			((BlockState) holder).getBlock().equals(ih.getBox()))
 			event.setCancelled(true);
-		//}
+	}
+
+	@EventHandler
+	public void onBlockBreakEvent(BlockBreakEvent event) {
+		if (event.getBlock().equals(ih.getBox()))
+			event.setCancelled(true);
+	}
+
+	@EventHandler
+	public void onEntityExplodeEvent(EntityExplodeEvent event) {
+		for (Block block : new ArrayList<Block>(event.blockList()))
+			if (block.equals(ih.getBox()))
+				event.blockList().remove(block);
 	}
 }

@@ -107,7 +107,8 @@ class BoxCommand implements CommandExecutor {
 			return true;
 		}
 
-		player.sendMessage(ChatColor.GREEN + "TODO");
+		ih.setBox(block);
+		player.sendMessage(ChatColor.GREEN + "Deposit box set");
 		return true;
 	}
 }
