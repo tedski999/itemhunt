@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scoreboard.*;
 import org.bukkit.block.Block;
 import org.bukkit.Material;
@@ -31,6 +33,7 @@ public class ItemHunt extends JavaPlugin {
 	private Map<String, Integer> teamScores = new HashMap<>();
 	private Map<String, Set<Material>> teamItems = new HashMap<>();
 	private Map<Material, Integer> itemRewards = new HashMap<>();
+	private List<Inventory> itemCatalogInventories = new ArrayList<>();
 
 	// Setup the plugin after it has been enabled
 	@Override
@@ -40,6 +43,7 @@ public class ItemHunt extends JavaPlugin {
 		getCommand("ihstart").setExecutor(new StartCommand(this));
 		getCommand("ihteam").setExecutor(new TeamCommand(this));
 		getCommand("ihbox").setExecutor(new BoxCommand(this));
+		getCommand("ihitems").setExecutor(new ItemsCommand(this));
 
 		// Register events
 		getServer().getPluginManager().registerEvents(new ItemHuntEventHandler(this), this);
@@ -152,9 +156,10 @@ public class ItemHunt extends JavaPlugin {
 		// TODO: reconds?
 		//itemRewards.put(Material.MUSIC_DISK, startReward);
 
+		generateItemCatalog();
 	}
 
-	// Clean up anything temporary made by the blugin
+	// Clean up anything temporary made by the plugin
 	@Override
 	public void onDisable() {
 		if (boxLabel != null)
@@ -261,6 +266,7 @@ public class ItemHunt extends JavaPlugin {
 		addTeamScore(teamName, reward);
 		teamItems.get(teamName).add(itemType);
 		itemRewards.put(itemType, (int) Math.ceil((double) reward / 2));
+		generateItemCatalog();
 
 		// Announce collection
 		String itemName = itemType.toString().replace("_", " ").toLowerCase();
@@ -314,6 +320,25 @@ public class ItemHunt extends JavaPlugin {
 	// Get the deposit box
 	public Block getBox() {
 		return box;
+	}
+
+	// Get the item catalog inventories list
+	public List<Inventory> getItemCatalogeInventories() {
+		return itemCatalogInventories;
+	}
+
+	// Open item catalog inventory
+	// TODO: error handling
+	public void openItemCatalog(Player player, int index) {
+		if (index < 0 || index >= itemCatalogInventories.size())
+			return;
+		BukkitRunnable openTask = new BukkitRunnable() {
+			@Override
+			public void run() {
+				player.openInventory(itemCatalogInventories.get(index));
+			}
+		};
+		openTask.runTask(this);
 	}
 
 	public void checkForPlayerRejoin(Player player) {
@@ -391,5 +416,53 @@ public class ItemHunt extends JavaPlugin {
 			obj.getScore(team.getKey()).setScore(team.getValue());
 
 		board = newBoard;
+	}
+
+	private void generateItemCatalog() {
+		itemCatalogInventories.clear();
+
+		int i = 0;
+		List<ItemStack> items = new ArrayList<>();
+		final int ITEMS_PER_PAGE = 45;
+		final int SLOTS_PER_PAGE = 54;
+		for (Entry<Material, Integer> itemReward : itemRewards.entrySet()) {
+			items.add(new ItemStack(itemReward.getKey(), itemReward.getValue()));
+			if (++i % ITEMS_PER_PAGE == 0) {
+				Inventory currentInventory = getServer().createInventory(
+					null, SLOTS_PER_PAGE,
+					"Item Catalog (Page " + (itemCatalogInventories.size() + 1) +")");
+				ItemStack[] itemsArray = new ItemStack[items.size()];
+				currentInventory.setContents(items.toArray(itemsArray));
+				itemCatalogInventories.add(currentInventory);
+				items.clear();
+				if (itemCatalogInventories.size() != 1)
+					currentInventory.setItem(
+						SLOTS_PER_PAGE - 6,
+						createButtonItem("Previous Page", Material.RED_WOOL));
+				currentInventory.setItem(
+					SLOTS_PER_PAGE - 4,
+					createButtonItem("Next Page", Material.GREEN_WOOL));
+			}
+		}
+
+		// Fill final page
+		Inventory currentInventory = getServer().createInventory(
+			null, SLOTS_PER_PAGE,
+			"Item Catalog (Page " + (itemCatalogInventories.size() + 1) +")");
+		ItemStack[] itemsArray = new ItemStack[items.size()];
+		currentInventory.setContents(items.toArray(itemsArray));
+		itemCatalogInventories.add(currentInventory);
+		if (itemCatalogInventories.size() > 1)
+			currentInventory.setItem(
+				SLOTS_PER_PAGE - 6,
+				createButtonItem("Previous Page", Material.RED_WOOL));
+	}
+
+	private ItemStack createButtonItem(String name, Material material) {
+		ItemStack item = new ItemStack(material, 1);
+		ItemMeta itemMeta = item.getItemMeta();
+		itemMeta.setDisplayName(name);
+		item.setItemMeta(itemMeta);
+		return item;
 	}
 }

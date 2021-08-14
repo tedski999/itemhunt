@@ -40,16 +40,25 @@ class ItemHuntEventHandler implements Listener {
 	@EventHandler
 	public void onInventoryDragEvent(InventoryDragEvent event) {
 
-		// Skip if not the box
+		// Only deal with players
+		if (!(event.getWhoClicked() instanceof Player))
+			return;
+		Player player = (Player) event.getWhoClicked();
+
+		// Don't allow dragging on item catalog inventory
+		Inventory inventory = event.getView().getTopInventory();
+		for (Inventory itemCatalogInventory : ih.getItemCatalogeInventories()) {
+			if (inventory.equals(itemCatalogInventory)) {
+				event.setCancelled(true);
+				return;
+			}
+		}
+
+		// Skip any further if not the box
 		InventoryHolder holder = event.getView().getTopInventory().getHolder();
 		if (!(holder instanceof BlockState) ||
 			!((BlockState) holder).getBlock().equals(ih.getBox()))
 			return;
-
-		// Only deal with players
-		if (!(event.getView().getBottomInventory().getHolder() instanceof Player))
-			return;
-		Player player = (Player) event.getView().getBottomInventory().getHolder();
 
 		// Attempt deposit if all items are dragged into top inventory.
 		// Cancel event if drag crosses between the two inventories.
@@ -82,16 +91,32 @@ class ItemHuntEventHandler implements Listener {
 	@EventHandler
 	public void onInventoryClickEvent(InventoryClickEvent event) {
 
-		// Skip if not the box
+		// Only deal with players
+		if (!(event.getWhoClicked() instanceof Player))
+			return;
+		Player player = (Player) event.getWhoClicked();
+
+		// Handle Previous and Next page item clicks
+		int i = 0;
+		Inventory inventory = event.getView().getTopInventory();
+		for (Inventory itemCatalogInventory : ih.getItemCatalogeInventories()) {
+			if (inventory.equals(itemCatalogInventory) && event.getCurrentItem() != null) {
+				String itemName = event.getCurrentItem().getItemMeta().getDisplayName();
+				if (itemName.equals("Previous Page"))
+					ih.openItemCatalog(player, i - 1);
+				else if (itemName.equals("Next Page"))
+					ih.openItemCatalog(player, i + 1);
+				event.setCancelled(true);
+				return;
+			}
+			i++;
+		}
+
+		// Skip any further if not the box
 		InventoryHolder holder = event.getView().getTopInventory().getHolder();
 		if (!(holder instanceof BlockState) ||
 			!((BlockState) holder).getBlock().equals(ih.getBox()))
 			return;
-
-		// Only deal with players
-		if (!(event.getView().getBottomInventory().getHolder() instanceof Player))
-			return;
-		Player player = (Player) event.getView().getBottomInventory().getHolder();
 
 		// Only attempt to deposit items if items have been deposited
 		ItemStack depositedItems = null;

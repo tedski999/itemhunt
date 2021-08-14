@@ -13,6 +13,9 @@ commands:
   ihteam:
     description: "Join a team for the item hunt."
     usage: "Usage: /<command> <team name>"
+  ihitems:
+    description: "Show all the collectable items"
+    usage: "Usage: /<command>"
   ihbox:
     description: "Designate the return box for the items in the hunt."
     usage: "Usage: /<command>"

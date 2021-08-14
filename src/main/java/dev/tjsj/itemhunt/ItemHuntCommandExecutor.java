@@ -109,3 +109,35 @@ class BoxCommand implements CommandExecutor {
 		return true;
 	}
 }
+
+// ihitems
+class ItemsCommand implements CommandExecutor {
+	private ItemHunt ih;
+
+	public ItemsCommand(ItemHunt plugin) {
+		ih = plugin;
+	}
+
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+
+		// No args required
+		if (args.length != 0)
+			return false;
+
+		// Check the sender is a player
+		if (!(sender instanceof Player)) {
+			sender.sendMessage("Only players can run this command");
+			return true;
+		}
+		Player player = (Player) sender;
+
+		// Check the game has started
+		if (!ih.isGameRunning()) {
+			sender.sendMessage(ChatColor.RED + "The catalog can only be viewed once the item hunt has started!");
+			return true;
+		}
+
+		ih.openItemCatalog(player, 0);
+		return true;
+	}
+}
