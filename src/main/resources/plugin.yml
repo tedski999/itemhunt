@@ -17,10 +17,6 @@ commands:
     description: "Designate the return box for the items in the hunt."
     usage: "Usage: /<command>"
     permission: ih
-  ihScore:
-    description: ""
-    usage: "Usage: /<command>"
-    permission: ih
 
 permissions:
   ih:

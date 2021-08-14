@@ -11,19 +11,13 @@ import java.util.HashSet;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.ChatColor;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.block.Block;
 import org.bukkit.scoreboard.*;
 import org.bukkit.Material;
 
 // TODO: feedback to players using commands
-// TODO: clean code and some comments
 
 public class ItemHunt extends JavaPlugin {
 	private BukkitRunnable gameTask;
@@ -41,7 +35,6 @@ public class ItemHunt extends JavaPlugin {
 		// Register commands
 		getCommand("ihstart").setExecutor(new StartCommand(this));
 		getCommand("ihteam").setExecutor(new TeamCommand(this));
-		getCommand("ihScore").setExecutor(new ScoreCommand(this));
 		getCommand("ihbox").setExecutor(new BoxCommand(this));
 
 		// Register events
@@ -68,17 +61,16 @@ public class ItemHunt extends JavaPlugin {
 			}
 			teamPlayers.get(teamName).add(player.getName()); // Add player to requested team list of members
 		}
+
+		// Create scoreboard
 		board = getServer().getScoreboardManager().getNewScoreboard();
 		Objective obj = board.registerNewObjective("ItemHunt", "dummy", "Loading...");
 		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		for(Player online : getServer().getOnlinePlayers()) {
+		for(Player online : getServer().getOnlinePlayers())
 			online.setScoreboard(board);
-			online.sendMessage("hello");
-		}
 		for(Entry<String, Integer> team : teamScores.entrySet())
-		{
 			obj.getScore(team.getKey()).setScore(team.getValue());
-		}
+
 		// Start the game
 		secondsRemaining = duration;
 		gameTask = new BukkitRunnable() {
@@ -124,10 +116,12 @@ public class ItemHunt extends JavaPlugin {
 		clearTask.runTask(this);
 	}
 
+	// Add score to teams current score
 	public void addTeamScore(String teamName, int reward) {
 		setTeamScore(teamName, teamScores.get(teamName) + reward);
 	}
 
+	// Set the score for a team
 	public void setTeamScore(String teamName, int newScore) {
 		teamScores.put(teamName, newScore);
 		board.getObjective("ItemHunt").getScore(teamName).setScore(newScore);
@@ -147,129 +141,12 @@ public class ItemHunt extends JavaPlugin {
 		}
 		board.getObjective("ItemHunt").setDisplayName(convertSecondsToHMS(secondsRemaining));
 	}
+
+	// Convert the number of seconds to hours : minutes : seconds
 	private static String convertSecondsToHMS(int total) {
 		int hours = total / 3600;
 		int remainder = total - hours * 3600;
 		int minutes = remainder / 60;
-		return new String(hours + ":" + minutes + ":" + (remainder - minutes * 60));
+		return String.format("%02d:%02d:%02d", hours, minutes, remainder - minutes * 60);
 	}
 }
-
-// ihstart <duration in seconds>
-class StartCommand implements CommandExecutor {
-	private ItemHunt ih;
-
-	public StartCommand(ItemHunt plugin) {
-		ih = plugin;
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-		// One arg required
-		if (args.length != 1)
-			return false;
-
-		// Attempt to parse the arg and start the game
-		try {
-			int duration = Integer.parseInt(args[0]);
-			if (duration > 0)
-				ih.startGame(duration);
-			else
-				sender.sendMessage(ChatColor.RED + "The duration has to be greater than 0");
-		} catch (NumberFormatException e) {
-			sender.sendMessage(ChatColor.RED + "That doesn't look like a number");
-		} catch (IllegalStateException e) {
-			sender.sendMessage(ChatColor.RED + e.getMessage());
-		}
-
-		return true;
-	}
-}
-
-// ihteam <team name>
-class TeamCommand implements CommandExecutor {
-	private ItemHunt ih;
-
-	public TeamCommand(ItemHunt plugin) {
-		ih = plugin;
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-		// One arg required
-		if (args.length != 1)
-			return false;
-
-		// Check the sender is a player
-		if (!(sender instanceof Player)) {
-			sender.sendMessage(ChatColor.RED + "Only players can run this command");
-			return true;
-		}
-		Player player = (Player) sender;
-		if(args[0].length() > 16)
-		{
-			sender.sendMessage(ChatColor.RED + "Fuk u under 16 characters midgetman");
-			return true;
-		}
-		// Change players team
-		ih.requestTeam(player.getName(), args[0]);
-		return true;
-	}
-}
-
-// ihbox
-class BoxCommand implements CommandExecutor {
-	private ItemHunt ih;
-
-	public BoxCommand(ItemHunt plugin) {
-		ih = plugin;
-	}
-
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-
-		// No args required
-		if (args.length != 0)
-			return false;
-
-		// Check the sender is a player
-		if (!(sender instanceof Player)) {
-			sender.sendMessage("Only players can run this command");
-			return true;
-		}
-		Player player = (Player) sender;
-
-		// Get the block they're looking at
-		Block block = player.getTargetBlock(null, 200);
-		if (block == null || !(block.getState() instanceof InventoryHolder)) {
-			player.sendMessage(ChatColor.RED + "Please point at a chest to designate as the item box before running this command");
-			return true;
-		}
-
-		player.sendMessage(ChatColor.GREEN + "TODO");
-		return true;
-	}
-}
-
-class ScoreCommand implements CommandExecutor {
-	private ItemHunt ih;
-
-	public ScoreCommand(ItemHunt plugin) {
-		ih = plugin;
-	}
-
-	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		Scoreboard bored = Bukkit.getScoreboardManager().getNewScoreboard();
-		Objective obj = bored.registerNewObjective("GetSwifty", "dummy", "Team Scores");
-		obj.setDisplaySlot(DisplaySlot.SIDEBAR);
-		Player player = (Player) sender;
-		Score score = obj.getScore("sadsadds");
-		score.setScore(142857);
-		sender.sendMessage("hi");
-		player.setScoreboard(bored);
-		return true;
-	}
-}
-
