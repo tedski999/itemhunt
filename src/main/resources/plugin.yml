@@ -8,7 +8,7 @@ author: [tedski999, NiallusTheGr8]
 commands:
   ihstart:
     description: "Start the item hunt!"
-    usage: "Usage: /<command> <duration in seconds>"
+    usage: "Usage: /<command> <hours> <minutes> <seconds>"
     permission: ih
   ihteam:
     description: "Join a team for the item hunt."

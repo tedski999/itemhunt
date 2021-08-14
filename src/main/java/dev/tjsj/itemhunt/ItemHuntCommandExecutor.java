@@ -23,22 +23,21 @@ class StartCommand implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-		// One arg required
-		if (args.length != 1)
+		// At least one arg required
+		if (args.length < 1)
 			return false;
 
 		// Attempt to parse the arg and start the game
 		try {
-			int duration = Integer.parseInt(args[0]);
-			if (duration <= 0) {
-				sender.sendMessage(ChatColor.RED + "The duration has to be greater than 0");
-				return true;
-			}
-
+			int duration = Integer.parseInt(args[0]) * 60 * 60;
+			duration += (args.length > 1) ? Integer.parseInt(args[1]) * 60 : 0;
+			duration += (args.length > 2) ? Integer.parseInt(args[1]) : 0;
+			if (duration <= 0)
+				throw new NumberFormatException();
 			ih.startGame(duration);
 			sender.sendMessage(ChatColor.GREEN + "Started item hunt!");
 		} catch (NumberFormatException e) {
-			sender.sendMessage(ChatColor.RED + "That doesn't look like a number");
+			sender.sendMessage(ChatColor.RED + "That doesn't look like a valid time.");
 		} catch (IllegalStateException e) {
 			sender.sendMessage(ChatColor.RED + e.getMessage());
 		}
@@ -48,12 +47,10 @@ class StartCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-		String oneHour = Integer.toString(1 * 60 * 60);
-		String twoHoursThirtyMins = Integer.toString(1 * 60 * 60 + 30 * 60);
-		String fourHours = Integer.toString(4 * 60 * 60);
-		String twentyFourHours = Integer.toString(24 * 60 * 60);
 		if (args.length == 1)
-			return List.of(oneHour, twoHoursThirtyMins, fourHours, twentyFourHours);
+			return List.of("1 0", "2 30", "4 0", "24 0 0", "99 59 59");
+		else if (args.length == 2)
+			return List.of("0", "15", "30", "45");
 		else
 			return List.of();
 	}
