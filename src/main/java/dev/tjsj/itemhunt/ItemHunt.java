@@ -50,113 +50,6 @@ public class ItemHunt extends JavaPlugin {
 
 		// Create scoreboard
 		createScoreboard();
-
-		// Add items to the itemRewards map
-
-		int startReward = 10;
-
-		// Plains
-		itemRewards.put(Material.DIRT, startReward);
-		itemRewards.put(Material.SUNFLOWER, startReward);
-		itemRewards.put(Material.POPPY, startReward);
-		itemRewards.put(Material.RABBIT_FOOT, startReward);
-		// Forests
-		itemRewards.put(Material.BEEHIVE, startReward);
-		itemRewards.put(Material.TOTEM_OF_UNDYING, startReward);
-		// Jungles
-		itemRewards.put(Material.BAMBOO, startReward);
-		itemRewards.put(Material.COCOA_BEANS, startReward);
-		// Mountains
-		itemRewards.put(Material.EMERALD, startReward);
-		// Deserts
-		itemRewards.put(Material.CACTUS, startReward);
-		itemRewards.put(Material.DEAD_BUSH, startReward);
-		itemRewards.put(Material.SANDSTONE, startReward);
-		// Taiga
-		itemRewards.put(Material.MYCELIUM, startReward);
-		itemRewards.put(Material.SWEET_BERRIES, startReward);
-		// Ice Spikes
-		itemRewards.put(Material.PACKED_ICE, startReward);
-		itemRewards.put(Material.BLUE_ICE, startReward);
-		// Swamps
-		itemRewards.put(Material.SLIME_BALL, startReward);
-		itemRewards.put(Material.SLIME_BLOCK, startReward);
-		// Oceans
-		itemRewards.put(Material.COOKED_SALMON, startReward);
-		itemRewards.put(Material.COOKED_COD, startReward);
-		itemRewards.put(Material.TURTLE_EGG, startReward);
-		itemRewards.put(Material.TURTLE_HELMET, startReward);
-		itemRewards.put(Material.HEART_OF_THE_SEA, startReward);
-		itemRewards.put(Material.TRIDENT, startReward);
-		itemRewards.put(Material.AXOLOTL_BUCKET, startReward);
-		itemRewards.put(Material.SUGAR_CANE, startReward);
-		itemRewards.put(Material.SPONGE, startReward);
-		itemRewards.put(Material.SEA_PICKLE, startReward);
-		itemRewards.put(Material.SEA_LANTERN, startReward);
-		itemRewards.put(Material.PRISMARINE_SHARD, startReward);
-		// Underground
-		itemRewards.put(Material.GLOW_BERRIES, startReward);
-		itemRewards.put(Material.CALCITE, startReward);
-		itemRewards.put(Material.AMETHYST_SHARD, startReward);
-		itemRewards.put(Material.COBWEB, startReward);
-		itemRewards.put(Material.OBSIDIAN, startReward);
-		itemRewards.put(Material.CRYING_OBSIDIAN, startReward);
-		itemRewards.put(Material.DIAMOND, startReward);
-		itemRewards.put(Material.DIAMOND_ORE, startReward);
-		itemRewards.put(Material.DEEPSLATE, startReward);
-		itemRewards.put(Material.MINECART, startReward);
-		// Nether
-		itemRewards.put(Material.SOUL_SAND, startReward);
-		itemRewards.put(Material.SOUL_SOIL, startReward);
-		itemRewards.put(Material.GLOWSTONE, startReward);
-		itemRewards.put(Material.ANCIENT_DEBRIS, startReward);
-		itemRewards.put(Material.NETHERITE_SCRAP, startReward);
-		itemRewards.put(Material.NETHERITE_INGOT, startReward);
-		itemRewards.put(Material.NETHERITE_BLOCK, startReward);
-		itemRewards.put(Material.BASALT, startReward);
-		itemRewards.put(Material.BLACKSTONE, startReward);
-		itemRewards.put(Material.NETHER_BRICKS, startReward);
-		itemRewards.put(Material.RED_NETHER_BRICKS, startReward);
-		itemRewards.put(Material.NETHER_WART, startReward);
-		// The End
-		itemRewards.put(Material.ENDER_EYE, startReward);
-		itemRewards.put(Material.ENDER_CHEST, startReward);
-		itemRewards.put(Material.END_ROD, startReward);
-		itemRewards.put(Material.DRAGON_EGG, startReward);
-		itemRewards.put(Material.ELYTRA, startReward);
-		itemRewards.put(Material.SHULKER_BOX, startReward);
-		itemRewards.put(Material.CHORUS_FRUIT, startReward);
-		// Misc
-		itemRewards.put(Material.COOKED_BEEF, startReward);
-		itemRewards.put(Material.BONE_BLOCK, startReward);
-		itemRewards.put(Material.WITHER_ROSE, startReward);
-		itemRewards.put(Material.FLOWER_POT, startReward);
-		itemRewards.put(Material.BRICKS, startReward);
-		itemRewards.put(Material.TNT, startReward);
-		itemRewards.put(Material.CAKE, startReward);
-		itemRewards.put(Material.GLISTERING_MELON_SLICE, startReward);
-		itemRewards.put(Material.GOLDEN_APPLE, startReward);
-		itemRewards.put(Material.ENCHANTED_GOLDEN_APPLE, startReward);
-		itemRewards.put(Material.FIREWORK_ROCKET, startReward);
-		itemRewards.put(Material.STICKY_PISTON, startReward);
-		itemRewards.put(Material.CARROT_ON_A_STICK, startReward);
-		itemRewards.put(Material.POISONOUS_POTATO, startReward);
-		itemRewards.put(Material.GOLDEN_CARROT, startReward);
-		itemRewards.put(Material.PUMPKIN_PIE, startReward);
-		itemRewards.put(Material.PINK_WOOL, startReward);
-		itemRewards.put(Material.SADDLE, startReward);
-		itemRewards.put(Material.CRIMSON_HYPHAE, startReward);
-		itemRewards.put(Material.GOLD_BLOCK, startReward);
-		itemRewards.put(Material.DIAMOND_BLOCK, startReward);
-		itemRewards.put(Material.QUARTZ_BLOCK, startReward);
-		itemRewards.put(Material.LAVA_BUCKET, startReward);
-		itemRewards.put(Material.DIAMOND_HORSE_ARMOR, startReward);
-		itemRewards.put(Material.SPECTRAL_ARROW, startReward);
-
-		// TODO: reconds?
-		//itemRewards.put(Material.MUSIC_DISK, startReward);
-
-		generateItemCatalog();
 	}
 
 	// Clean up anything temporary made by the plugin
@@ -192,9 +85,11 @@ public class ItemHunt extends JavaPlugin {
 			player.sendMessage(ChatColor.YELLOW + "The item hunt has begun!");
 		}
 
-		// Reset scores
+		// Reset scores and items
 		for (String teamName : teamScores.keySet())
 			setTeamScore(teamName, 0);
+		teamItems.forEach((k, v) -> v.clear());
+		generateItemRewards();
 
 		// Start the game
 		secondsRemaining = duration;
@@ -270,7 +165,7 @@ public class ItemHunt extends JavaPlugin {
 
 		// Announce collection
 		String itemName = itemType.toString().replace("_", " ").toLowerCase();
-		String pointsSurfix = (reward == 1) ? "s" : "";
+		String pointsSurfix = (reward == 1) ? "" : "s";
 		Set<Player> onlinePlayersInHunt = getServer().getOnlinePlayers().stream()
 			.filter(p -> playerTeams.containsKey(p.getName()))
 			.collect(Collectors.toSet());
@@ -464,5 +359,115 @@ public class ItemHunt extends JavaPlugin {
 		itemMeta.setDisplayName(name);
 		item.setItemMeta(itemMeta);
 		return item;
+	}
+
+	// Add items to the itemRewards map
+	private void generateItemRewards() {
+
+		int startReward = 10;
+		itemRewards = new HashMap<>();
+
+		// Plains
+		itemRewards.put(Material.DIRT, startReward);
+		itemRewards.put(Material.SUNFLOWER, startReward);
+		itemRewards.put(Material.POPPY, startReward);
+		itemRewards.put(Material.RABBIT_FOOT, startReward);
+		// Forests
+		itemRewards.put(Material.BEEHIVE, startReward);
+		itemRewards.put(Material.TOTEM_OF_UNDYING, startReward);
+		// Jungles
+		itemRewards.put(Material.BAMBOO, startReward);
+		itemRewards.put(Material.COCOA_BEANS, startReward);
+		// Mountains
+		itemRewards.put(Material.EMERALD, startReward);
+		// Deserts
+		itemRewards.put(Material.CACTUS, startReward);
+		itemRewards.put(Material.DEAD_BUSH, startReward);
+		itemRewards.put(Material.SANDSTONE, startReward);
+		// Taiga
+		itemRewards.put(Material.MYCELIUM, startReward);
+		itemRewards.put(Material.SWEET_BERRIES, startReward);
+		// Ice Spikes
+		itemRewards.put(Material.PACKED_ICE, startReward);
+		itemRewards.put(Material.BLUE_ICE, startReward);
+		// Swamps
+		itemRewards.put(Material.SLIME_BALL, startReward);
+		itemRewards.put(Material.SLIME_BLOCK, startReward);
+		// Oceans
+		itemRewards.put(Material.COOKED_SALMON, startReward);
+		itemRewards.put(Material.COOKED_COD, startReward);
+		itemRewards.put(Material.TURTLE_EGG, startReward);
+		itemRewards.put(Material.TURTLE_HELMET, startReward);
+		itemRewards.put(Material.HEART_OF_THE_SEA, startReward);
+		itemRewards.put(Material.TRIDENT, startReward);
+		itemRewards.put(Material.AXOLOTL_BUCKET, startReward);
+		itemRewards.put(Material.SUGAR_CANE, startReward);
+		itemRewards.put(Material.SPONGE, startReward);
+		itemRewards.put(Material.SEA_PICKLE, startReward);
+		itemRewards.put(Material.SEA_LANTERN, startReward);
+		itemRewards.put(Material.PRISMARINE_SHARD, startReward);
+		// Underground
+		itemRewards.put(Material.GLOW_BERRIES, startReward);
+		itemRewards.put(Material.CALCITE, startReward);
+		itemRewards.put(Material.AMETHYST_SHARD, startReward);
+		itemRewards.put(Material.COBWEB, startReward);
+		itemRewards.put(Material.OBSIDIAN, startReward);
+		itemRewards.put(Material.CRYING_OBSIDIAN, startReward);
+		itemRewards.put(Material.DIAMOND, startReward);
+		itemRewards.put(Material.DIAMOND_ORE, startReward);
+		itemRewards.put(Material.DEEPSLATE, startReward);
+		itemRewards.put(Material.MINECART, startReward);
+		// Nether
+		itemRewards.put(Material.SOUL_SAND, startReward);
+		itemRewards.put(Material.SOUL_SOIL, startReward);
+		itemRewards.put(Material.GLOWSTONE, startReward);
+		itemRewards.put(Material.ANCIENT_DEBRIS, startReward);
+		itemRewards.put(Material.NETHERITE_SCRAP, startReward);
+		itemRewards.put(Material.NETHERITE_INGOT, startReward);
+		itemRewards.put(Material.NETHERITE_BLOCK, startReward);
+		itemRewards.put(Material.BASALT, startReward);
+		itemRewards.put(Material.BLACKSTONE, startReward);
+		itemRewards.put(Material.NETHER_BRICKS, startReward);
+		itemRewards.put(Material.RED_NETHER_BRICKS, startReward);
+		itemRewards.put(Material.NETHER_WART, startReward);
+		// The End
+		itemRewards.put(Material.ENDER_EYE, startReward);
+		itemRewards.put(Material.ENDER_CHEST, startReward);
+		itemRewards.put(Material.END_ROD, startReward);
+		itemRewards.put(Material.DRAGON_EGG, startReward);
+		itemRewards.put(Material.ELYTRA, startReward);
+		itemRewards.put(Material.SHULKER_BOX, startReward);
+		itemRewards.put(Material.CHORUS_FRUIT, startReward);
+		// Misc
+		itemRewards.put(Material.COOKED_BEEF, startReward);
+		itemRewards.put(Material.BONE_BLOCK, startReward);
+		itemRewards.put(Material.WITHER_ROSE, startReward);
+		itemRewards.put(Material.FLOWER_POT, startReward);
+		itemRewards.put(Material.BRICKS, startReward);
+		itemRewards.put(Material.TNT, startReward);
+		itemRewards.put(Material.CAKE, startReward);
+		itemRewards.put(Material.GLISTERING_MELON_SLICE, startReward);
+		itemRewards.put(Material.GOLDEN_APPLE, startReward);
+		itemRewards.put(Material.ENCHANTED_GOLDEN_APPLE, startReward);
+		itemRewards.put(Material.FIREWORK_ROCKET, startReward);
+		itemRewards.put(Material.STICKY_PISTON, startReward);
+		itemRewards.put(Material.CARROT_ON_A_STICK, startReward);
+		itemRewards.put(Material.POISONOUS_POTATO, startReward);
+		itemRewards.put(Material.GOLDEN_CARROT, startReward);
+		itemRewards.put(Material.PUMPKIN_PIE, startReward);
+		itemRewards.put(Material.PINK_WOOL, startReward);
+		itemRewards.put(Material.SADDLE, startReward);
+		itemRewards.put(Material.CRIMSON_HYPHAE, startReward);
+		itemRewards.put(Material.GOLD_BLOCK, startReward);
+		itemRewards.put(Material.DIAMOND_BLOCK, startReward);
+		itemRewards.put(Material.QUARTZ_BLOCK, startReward);
+		itemRewards.put(Material.LAVA_BUCKET, startReward);
+		itemRewards.put(Material.DIAMOND_HORSE_ARMOR, startReward);
+		itemRewards.put(Material.SPECTRAL_ARROW, startReward);
+
+		// TODO: reconds?
+		//itemRewards.put(Material.MUSIC_DISK, startReward);
+
+		generateItemCatalog();
 	}
 }
