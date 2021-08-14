@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,8 +19,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.scoreboard.*;
 import org.bukkit.block.Block;
 import org.bukkit.Material;
-
-// TODO: feedback to players using commands
 
 public class ItemHunt extends JavaPlugin {
 	private BukkitRunnable gameTask;
@@ -68,6 +67,19 @@ public class ItemHunt extends JavaPlugin {
 		if (playerTeams.isEmpty())
 			throw new IllegalStateException("No teams made yet");
 
+		// NOTE: players can dc and reconnect after the game starts to keep items
+		// NOTE: players can place items in chest before the game starts to keep items
+		// temp solution: adventure mode till game start
+
+		// Clear players inventories and announce start
+		Set<Player> onlinePlayersInHunt = getServer().getOnlinePlayers().stream()
+			.filter(p -> playerTeams.containsKey(p.getName()))
+			.collect(Collectors.toSet());
+		for (Player player : onlinePlayersInHunt) {
+			player.getInventory().clear();
+			player.sendMessage(ChatColor.YELLOW + "The item hunt has begun!");
+		}
+
 		// Reset scores
 		for (String teamName : teamScores.keySet())
 			setTeamScore(teamName, 0);
@@ -88,13 +100,16 @@ public class ItemHunt extends JavaPlugin {
 		String playerName = player.getName();
 		String oldTeamName = playerTeams.get(playerName);
 
-		// Don't do anything if (re)joining the same team as before
-		if (oldTeamName != null && oldTeamName.equals(teamName))
-			return;
+		// Assign the players scoreboard to ours
+		player.setScoreboard(board);
 
-		// Remove player from previous team
-		if (oldTeamName != null)
-			teamPlayers.get(oldTeamName).remove(playerName);
+		// Don't do anything if (re)joining the same team as before,
+		// otherwise leave the old team
+		if (oldTeamName != null) {
+			if (oldTeamName.equals(teamName))
+				return;
+			leaveTeam(player, teamName);
+		}
 
 		// Initialize new team if it doesn't exist yet
 		playerTeams.put(playerName, teamName);
@@ -106,27 +121,30 @@ public class ItemHunt extends JavaPlugin {
 
 		// Add player to team list of members
 		teamPlayers.get(teamName).add(playerName);
+	}
+
+	// Remove player from team
+	public void leaveTeam(Player player, String teamName) {
+		teamPlayers.get(teamName).remove(player.getName());
+		player.sendMessage(ChatColor.YELLOW + "Left item hunt team '" + teamName + "'.");
 
 		// Clear previous team if now empty
-		if (oldTeamName != null && teamPlayers.get(oldTeamName).size() == 0) {
-			teamScores.remove(oldTeamName);
-			teamPlayers.remove(oldTeamName);
+		if (teamPlayers.get(teamName).size() == 0) {
+			teamScores.remove(teamName);
+			teamPlayers.remove(teamName);
 			createScoreboard(); // We need to recreate the scoreboard to remove entries...
 		}
-
-		// Assign the players scoreboard to ours
-		player.setScoreboard(board);
 	}
 
 	// TODO: proper error handling
 	public void depositItem(String playerName, Material itemType, Inventory inv) throws Exception {
 		if (!isGameRunning())
-			throw new Exception("game not runnignj");
+			throw new Exception("Item hunt not yet started!");
 
 		String teamName = playerTeams.get(playerName);
 
 		if (teamItems.get(teamName).contains(itemType))
-			throw new Exception("thing already collectd");
+			throw new Exception("You've already collected that!");
 
 		// TODO: check if a valid item is being deposited, get reward and set new value
 		addTeamScore(teamName, 10);
@@ -176,8 +194,11 @@ public class ItemHunt extends JavaPlugin {
 
 	public void checkForPlayerRejoin(Player player) {
 		String playerName = player.getName();
-		if (playerTeams.containsKey(playerName))
-			requestTeam(player, playerTeams.get(playerName));
+		if (playerTeams.containsKey(playerName)) {
+			String teamName = playerTeams.get(playerName);
+			requestTeam(player, teamName);
+			player.sendMessage(ChatColor.BLUE + "Welcome back! You have automatically rejoined the item hunt team '" + teamName + "'.");
+		}
 	}
 
 	// Check if the async task is running

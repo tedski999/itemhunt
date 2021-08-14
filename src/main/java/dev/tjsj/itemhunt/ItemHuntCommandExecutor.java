@@ -26,10 +26,13 @@ class StartCommand implements CommandExecutor {
 		// Attempt to parse the arg and start the game
 		try {
 			int duration = Integer.parseInt(args[0]);
-			if (duration > 0)
-				ih.startGame(duration);
-			else
+			if (duration <= 0) {
 				sender.sendMessage(ChatColor.RED + "The duration has to be greater than 0");
+				return true;
+			}
+
+			ih.startGame(duration);
+			sender.sendMessage(ChatColor.GREEN + "Started item hunt!");
 		} catch (NumberFormatException e) {
 			sender.sendMessage(ChatColor.RED + "That doesn't look like a number");
 		} catch (IllegalStateException e) {
@@ -51,15 +54,9 @@ class TeamCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 
-		// One arg optional
-		if (args.length > 1)
+		// One arg required
+		if (args.length != 1)
 			return false;
-
-		// Send the user the team list if no team name is provided
-		if (args.length == 0) {
-			sender.sendMessage(ChatColor.YELLOW + "TODO: print teams");
-			return true;
-		}
 
 		// Check the sender is a player
 		if (!(sender instanceof Player)) {
